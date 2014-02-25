@@ -1,0 +1,6 @@
+<%-- any content can be specified here e.g.: --%>
+<%@ page pageEncoding="UTF-8" %>
+        <header>
+            <h1>Charity Management System</h1>
+            <h3>I like sausages</h3>
+        </header>

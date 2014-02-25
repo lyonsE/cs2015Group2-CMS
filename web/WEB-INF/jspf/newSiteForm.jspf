@@ -1,0 +1,24 @@
+<%-- any content can be specified here e.g.: --%>
+<%@ page pageEncoding="UTF-8" %>
+
+<section id="signUp">
+   <form  method="POST" action="newSite.jsp">
+<%
+    //If User isn't logged in, prompt them to make a new account when creating
+    //their site
+    if ( session.getAttribute("loggedIn") ==null){
+        out.println("<label for=\"username\" >Username</label>"
+        + "<input type=\"text\" name=\"username\"/>"
+        + "<label for=\"email\" >Email</label>"
+        + "<input type=\"text\" name=\"email\"/>"
+        + "<label for=\"password\" >Password</label>"
+        + "<input type=\"password\" name=\"password\"/>"
+        + "<label for=\"reppassword\" >Repeat Password</label>"
+        + "<input type=\"password\" name=\"reppassword\"/>");
+    } 
+    %>
+        <label for="domain" >Domain</label>
+        <input type="text" name="domain"/>
+        <input type="submit"/>;
+    </form>
+</section>

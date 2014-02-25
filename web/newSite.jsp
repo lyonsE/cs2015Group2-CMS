@@ -3,6 +3,7 @@
     Created on : 11-Feb-2014, 15:13:08
     Author     : Éanna
 --%>
+<%@page import="com.Group2Project.CMSadministrator.LoginHandler"%>
 <%@page import="org.jasypt.util.password.BasicPasswordEncryptor"%>
 <%@page import="java.sql.SQLException"%>
 <%@page import="com.Group2Project.CMSadministrator.DatabaseHandler"%>
@@ -14,18 +15,20 @@
         <title>Charity Management System</title>
     </head>
     <body>
-        <header>
-            <h1>Charity Management System</h1>
-            <h3>I like sausages</h3>
-        </header>
+        <%@include file="WEB-INF/jspf/header.jspf" %>
+        
+        <%@include file="WEB-INF/jspf/nav.jspf" %>
         
         <% 
             //Is logged in?
             //New Domain form
             
             //New user and Site form
-            
-            if (request.getParameterNames().hasMoreElements()) {
+        if (request.getParameterNames().hasMoreElements()) {
+            //Create a validater
+                if ((!( request.getParameter("email").equals(""))
+                    || ! request.getParameter("username").equals(""))
+                    && session.getAttribute("loggedIn") == null){
                 //Validate input
                 String username = request.getParameter("username");
                 String email = request.getParameter("email");
@@ -50,32 +53,27 @@
                     out.println("<p>Bad shit!</p>");
                 }
                 out.println("<p>New User created!</p>");
+                //Login the new user
+                LoginHandler loginHandler = new LoginHandler();
+                loginHandler.login(email, password, session);
             }
+                if (request.getParameter("domain") != null
+                        && session.getAttribute("loggedIn")!= null) {
+                    //validate domain name
+                    //Create domain
+                    out.println("<p>New Domain Created!</p>");
+                }
+            }
+        
+            //If user has filled in new User form and is not logged in
+            
+        
+        
+            
         %>
         <!--If Errors, print errors and highlight inputs!-->
-        <section id="signUp">
-            <form  method="POST" action="newSite.jsp">
-                
-                <label for="username" >Username</label>
-                <input type="text" name="username"/>
-                <label for="email" >Email</label>
-                <input type="text" name="email"/>
-                <label for="password" >Password</label>
-                <input type="password" name="password"/>
-                <label for="reppassword" >Repeat Password</label>
-                <input type="password" name="reppassword"/>
-                
-                <label for="domain" >Domain</label>
-                <input type="text" name="domain"/>
-                <input type="submit"/>;
-                
-                
-                <p>TEMPLATE PICKER</p>
-                <p>You can change template at a later date</p>
-                
-            </form>
-        </section>
         
+        <%@include file="WEB-INF/jspf/newSiteForm.jspf" %>
         
         
         </section>

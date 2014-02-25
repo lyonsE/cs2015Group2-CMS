@@ -50,7 +50,7 @@ public class LoginHandler {
                 
                 //Check against plain password
                 if (passwordEncryptor.checkPassword(password, storedPass)){
-                    session.setAttribute("loggedIn", true);
+                    session.setAttribute("loggedIn", email);
                 } else {
                     errors.add( new CMSError("Wrong password"));
                 }

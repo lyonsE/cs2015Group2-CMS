@@ -45,6 +45,7 @@ public class DatabaseHandler {
         try {
             conn = getConnection();
         } catch (SQLException ex) {
+            ex.printStackTrace();
             throw new Exception();
         }
     }
@@ -101,11 +102,11 @@ public class DatabaseHandler {
             ":" + this.serverPort + "/",
             connectionProps);
             */
-            
+            Class.forName("com.mysql.jdbc.Driver");
             connection = DriverManager.getConnection(
                        "jdbc:mysql://localhost:3306/" + database,
                        connectionProps);
-            Class.forName("com.mysql.jdbc.Driver");
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
