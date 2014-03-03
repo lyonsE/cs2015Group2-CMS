@@ -3,6 +3,8 @@
     Created on : 11-Feb-2014, 15:13:08
     Author     : Éanna
 --%>
+<%@page import="java.io.FileWriter"%>
+<%@page import="java.io.File"%>
 <%@page import="com.Group2Project.CMSadministrator.LoginHandler"%>
 <%@page import="org.jasypt.util.password.BasicPasswordEncryptor"%>
 <%@page import="java.sql.SQLException"%>
@@ -25,6 +27,11 @@
             
             //New user and Site form
         if (request.getParameterNames().hasMoreElements()) {
+            
+            File test = new File("TEST.txt");
+            test.setWritable(true);
+            FileWriter writer = new FileWriter("TEST.txt");
+            writer.append("Hell no");
             //Create a validater
                 if ((!( request.getParameter("email").equals(""))
                     || ! request.getParameter("username").equals(""))
@@ -75,7 +82,7 @@
         
         <%@include file="WEB-INF/jspf/newSiteForm.jspf" %>
         
-        
+           
         </section>
     </body>
 </html>
