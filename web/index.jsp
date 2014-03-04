@@ -4,6 +4,7 @@
     Author     : Éanna
 --%>
 
+<%@page import="java.io.File"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="com.Group2Project.CMSadministrator.*"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -52,7 +53,9 @@
                 
                 
             }
-        
+        File test = new File("../conf/test.txt");
+        out.println(test.getCanonicalPath());
+        test.createNewFile();
         %>
         <%@include file="WEB-INF/jspf/nav.jspf" %>
         <section id="login">

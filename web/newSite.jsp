@@ -3,6 +3,7 @@
     Created on : 11-Feb-2014, 15:13:08
     Author     : Éanna
 --%>
+<%@page import="com.Group2Project.CMSadministrator.ServerConfigure"%>
 <%@page import="java.io.FileWriter"%>
 <%@page import="java.io.File"%>
 <%@page import="com.Group2Project.CMSadministrator.LoginHandler"%>
@@ -27,11 +28,12 @@
             
             //New user and Site form
         if (request.getParameterNames().hasMoreElements()) {
-            
+            /*
             File test = new File("TEST.txt");
             test.setWritable(true);
             FileWriter writer = new FileWriter("TEST.txt");
             writer.append("Hell no");
+            */
             //Create a validater
                 if ((!( request.getParameter("email").equals(""))
                     || ! request.getParameter("username").equals(""))
@@ -41,7 +43,7 @@
                 String email = request.getParameter("email");
                 String password = request.getParameter("password");
                 String repPassword = request.getParameter("reppassword");
-                String domain = request.getParameter("domain");
+                
                 //New validator
                 //validator.validatePassword
                 //validator.validateEmail
@@ -67,7 +69,11 @@
                 if (request.getParameter("domain") != null
                         && session.getAttribute("loggedIn")!= null) {
                     //validate domain name
+                    String domain = request.getParameter("domain");
                     //Create domain
+                    
+                    ServerConfigure conf = new ServerConfigure();
+                    conf.addVirtualHost(domain, "UserSiteApp");
                     out.println("<p>New Domain Created!</p>");
                 }
             }
