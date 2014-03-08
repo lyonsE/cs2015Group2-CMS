@@ -24,8 +24,9 @@ import org.jasypt.util.password.*;
  */
 public class LoginHandler {
     private DatabaseHandler db;
-    
-    public LoginHandler(){
+    private ArrayList<CMSError> errors;
+    public LoginHandler( ArrayList<CMSError> errors){
+        this.errors = errors;
         db = null;
         try {
             db = new DatabaseHandler();
@@ -33,10 +34,11 @@ public class LoginHandler {
             //Fuck
         }
     }
-    
+    public LoginHandler(){
+        this(new ArrayList<CMSError>());
+    }
     public ArrayList<CMSError> login(String email,
             String password, HttpSession session){
-        ArrayList<CMSError> errors = new ArrayList<CMSError>();
         try {
             //Check user exists and get passHash
             ResultSet results =db.executeQuery("SELECT passHash "

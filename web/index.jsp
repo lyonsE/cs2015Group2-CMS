@@ -26,13 +26,23 @@
                 //Validate input
                if (request.getParameter("email")!= null
                        && request.getParameter("password") != null) {
-                   String email = request.getParameter("email");
+                    String email = request.getParameter("email");
                     String password = request.getParameter("password");
                     //Input is OKAY
                     //CreateValidater
+                    InputValidator validator = new InputValidator();
                     //Validate input
-                    LoginHandler loginHandler = new LoginHandler();
-                    ArrayList<CMSError> errors = loginHandler.login(email,password, session);
+                    validator.validateEmail(email);
+                    validator.validatePassword(password, password);
+                    
+                    ArrayList<CMSError> errors = validator.getErrors();
+                    
+                    if (errors.size()==0){
+                        LoginHandler loginHandler = new LoginHandler(errors);
+                        loginHandler.login(email,password, session);
+                    
+                    }
+                    
                     if (errors.size()>0){
                         out.println("<ul>");
                         for (int i=0; i<errors.size();i++){
@@ -45,6 +55,7 @@
                     } else {
                         out.println("<p>Logged in successfully</p>");
                     }
+                    
                }
                
                if ( request.getParameter("logout") != null){

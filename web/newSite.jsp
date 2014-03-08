@@ -3,6 +3,10 @@
     Created on : 11-Feb-2014, 15:13:08
     Author     : Éanna
 --%>
+<%@page import="java.sql.ResultSet"%>
+<%@page import="java.util.ArrayList"%>
+<%@page import="com.Group2Project.CMSadministrator.CMSError"%>
+<%@page import="com.Group2Project.CMSadministrator.InputValidator"%>
 <%@page import="com.Group2Project.CMSadministrator.ServerConfigure"%>
 <%@page import="java.io.FileWriter"%>
 <%@page import="java.io.File"%>
@@ -37,70 +41,89 @@
             writer.append("Hell no");
             */
             //Create a validater
-                if ((!( request.getParameter("email").equals(""))
-                    || ! request.getParameter("username").equals(""))
-                    && session.getAttribute("loggedIn") == null){
-                    //Validate input
-                    String username = request.getParameter("username");
-                    String email = request.getParameter("email");
-                    String password = request.getParameter("password");
-                    String repPassword = request.getParameter("reppassword");
+            
+            ArrayList<CMSError> errors = new ArrayList<CMSError>();
+            InputValidator validator = new InputValidator( errors );
+            if ((!( request.getParameter("email").equals(""))
+                || ! request.getParameter("username").equals(""))
+                && session.getAttribute("loggedIn") == null){
+                //Validate input
+                String username = request.getParameter("username");
+                String email = request.getParameter("email");
+                String password = request.getParameter("password");
+                String repPassword = request.getParameter("reppassword");
 
-                    //New validator
-                    //validator.validatePassword
-                    //validator.validateEmail
-                    //Input is OKAY
-                    //EncryptPassword
+                //New validator
 
-                    BasicPasswordEncryptor passwordEncryptor = new BasicPasswordEncryptor();
-                    String passHash = passwordEncryptor.encryptPassword(password);
+                validator.validateUsername(username);
+                validator.validatePassword(password, repPassword);
+                validator.validateEmail( email);
+                //Input is OKAY
 
 
-                        
-                        db.executeUpdate(" INSERT INTO User (username, email, passHash)"
-                            + "VALUES (\""+ username +"\",\""
-                                + email +"\",\"" + passHash +"\"); ");
-                        
+                //EncryptPassword
+                if (errors.size()==0){
+                    BasicPasswordEncryptor passwordEncryptor =
+                            new BasicPasswordEncryptor();
+                    String passHash = passwordEncryptor.encryptPassword(password);   
+                    db.executeUpdate(" INSERT INTO User (username, email, passHash)"
+                        + "VALUES (\""+ username +"\",\""
+                            + email +"\",\"" + passHash +"\"); ");
 
                     out.println("<p>New User created!</p>");
                     //Login the new user
                     LoginHandler loginHandler = new LoginHandler();
                     loginHandler.login(email, password, session);
                 }
-                if (request.getParameter("domain") != null
-                        && session.getAttribute("loggedIn")!= null) {
-                    //validate domain name
-                    String domain = request.getParameter("domain");
-                    //Create domain
 
-                    ServerConfigure conf = new ServerConfigure();
+            }
+            if (request.getParameter("domain") != null
+                    && session.getAttribute("loggedIn")!= null) {
+                //validate domain name
+
+                String domain = request.getParameter("domain");
+                //Create domain
+                validator.validateDomainName(domain);
+                if (errors.size()==0){
+                    //CHECK FIRST FOR DUPLICATES
+                    ResultSet results =db.executeQuery("SELECT domainName "
+                    + "FROM site WHERE domainName = \"" +domain + "\";");
+                    
+                    if (results.next()){
+                        ServerConfigure conf = new ServerConfigure();
                     conf.addVirtualHost(domain, "UserSiteApp");
-                    
                     db.executeUpdate("INSERT INTO site( domainName ) VALUES (\""
-                            + domain + "\");");
-                    
+                        + domain + "\");");
                     db.executeUpdate("INSERT INTO owns ( userId, siteId)"
-                            + "VALUES ((SELECT userId from user WHERE email =\""
-                            + session.getAttribute("loggedIn")+ "\" ),"
-                            + "(SELECT siteId FROM site WHERE domainName =\""
-                            + domain + "\"));");
+                        + "VALUES ((SELECT userId from user WHERE email =\""
+                        + session.getAttribute("loggedIn")+ "\" ),"
+                        + "(SELECT siteId FROM site WHERE domainName =\""
+                        + domain + "\"));");
                     db.closeConnection();
                     out.println("<p>New Domain Created!</p>");
-                    
-                    
-                }
-            } catch(Exception e){
-                    //uh oh, database error
-                    out.println("<p>Bad shit!</p>");
+                    } else {
+                        errors.add(new CMSError("This domain has already been registered"));
+                    }
                 }
             }
-                
-        
+            
+            if (errors.size()>0){
+                        out.println("<ul>");
+                        for (int i=0; i<errors.size();i++){
+                            out.println("<li>");
+                            out.println(errors.get(i));
+                            out.println("</li>");
+                        }
+
+                        out.println("</ul>");
+                    }
+        } catch(Exception e){
+                //uh oh, database error
+                out.println("<p>Bad shit!</p>");
+                e.printStackTrace();
+            }
+        }
             //If user has filled in new User form and is not logged in
-            
-        
-        
-            
         %>
         <!--If Errors, print errors and highlight inputs!-->
         
