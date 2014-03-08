@@ -6,6 +6,12 @@
 
 package com.Group2Project.CMSadministrator;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -61,6 +67,7 @@ public class DatabaseHandler {
             Statement statement = conn.createStatement();
             statement.executeQuery(query);
             result = statement.getResultSet();
+            
         } catch (SQLException ex) {
             Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
             throw new Exception();
@@ -72,7 +79,7 @@ public class DatabaseHandler {
      * Removes the need for boilerplate code, used for data manipulation
      * @param query
      * @return
-     * @throws Exception 
+     * @throws SQLException 
      */
     public ResultSet executeUpdate( String query) throws Exception{
         ResultSet result = null;
@@ -80,20 +87,36 @@ public class DatabaseHandler {
             Statement statement = conn.createStatement();
             statement.executeUpdate(query);
             result = statement.getResultSet();
-        } catch (SQLException ex) {
-            Logger.getLogger(DatabaseHandler.class.getName()).log(Level.SEVERE, null, ex);
-            throw new Exception();
+        } catch (SQLException e){
+            e.printStackTrace();
         }
         
         return result;
     }
-    
+    public void executeScript( File script ) throws Exception{
+        BufferedReader reader = new BufferedReader( new FileReader( script ) );
+        
+        StringBuilder builder = new StringBuilder();
+        String line;
+        while((line = reader.readLine()) != null){
+            builder.append(line);
+        }
+        
+        String sql = builder.toString();
+        System.out.println(sql);
+        try {
+            executeUpdate(sql);
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+    }
     private Connection getConnection() throws SQLException {
         
         Connection connection = null;
         Properties connectionProps = new Properties();
         connectionProps.put("user", this.userName);
         connectionProps.put("password", this.password);
+        connectionProps.put("allowMultiQueries", "true");
         try {
             /*
             connection = DriverManager.getConnection(
